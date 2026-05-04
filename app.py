@@ -3,12 +3,13 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
-import anthropic
+import google.generativeai as genai
 
 app = Flask(__name__)
 line_bot_api = LineBotApi(os.environ["LINE_TOKEN"])
 handler = WebhookHandler(os.environ["LINE_SECRET"])
-claude = anthropic.Anthropic(api_key=os.environ["CLAUDE_KEY"])
+genai.configure(api_key=os.environ["GEMINI_KEY"])
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -23,12 +24,8 @@ def webhook():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_text = event.message.text
-    response = claude.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=500,
-        messages=[{"role": "user", "content": user_text}]
-    )
-    reply = response.content[0].text
+    response = model.generate_content(user_text)
+    reply = response.text
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 
 if __name__ == "__main__":
