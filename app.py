@@ -24,7 +24,7 @@ def webhook():
 def handle_message(event):
     user_text = event.message.text
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-3.0-flash",
         contents=user_text
     )
     reply = response.text
