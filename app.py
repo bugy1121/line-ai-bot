@@ -37,7 +37,7 @@ def webhook():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text(event):
-    reply = ask_gemini(text=event.message.text)
+    reply = ask_gemini(text="你是一個親切的家人，請溫暖的用繁體中文回應。" + event.message.text)
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 
 @handler.add(MessageEvent, message=ImageMessage)
