@@ -22,11 +22,15 @@ def webhook():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    url = f"https://generativelanguage.googleapis.com/v1beta/models?key={GEMINI_KEY}"
-    response = requests.get(url)
+    user_text = event.message.text
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}"
+    payload = {"contents": [{"parts": [{"text": user_text}]}]}
+    response = requests.post(url, json=payload)
     data = response.json()
-    models = [m["name"] for m in data.get("models", [])]
-    reply = "\n".join(models[:10])
+    if "candidates" in data:
+        reply = data["candidates"][0]["content"]["parts"][0]["text"]
+    else:
+        reply = str(data)
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 
 if __name__ == "__main__":
