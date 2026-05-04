@@ -27,7 +27,10 @@ def handle_message(event):
     payload = {"contents": [{"parts": [{"text": user_text}]}]}
     response = requests.post(url, json=payload)
     data = response.json()
-    reply = data["candidates"][0]["content"]["parts"][0]["text"]
+    if "candidates" in data:
+        reply = data["candidates"][0]["content"]["parts"][0]["text"]
+    else:
+        reply = str(data)
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 
 if __name__ == "__main__":
