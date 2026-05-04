@@ -9,7 +9,7 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(os.environ["LINE_TOKEN"])
 handler = WebhookHandler(os.environ["LINE_SECRET"])
 genai.configure(api_key=os.environ["GEMINI_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash-latest")
+model = genai.GenerativeModel("gemini-pro")
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
