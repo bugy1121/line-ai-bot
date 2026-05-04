@@ -47,7 +47,7 @@ def handle_image(event):
     for chunk in message_content.iter_content():
         image_data += chunk
     image_base64 = base64.b64encode(image_data).decode("utf-8")
-    reply = ask_gemini(text="請描述這張圖片的內容", image_base64=image_base64)
+    reply = ask_gemini(text="請在3到5句內溫暖的回應這張圖片的內容", image_base64=image_base64)
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 
 if __name__ == "__main__":
