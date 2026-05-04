@@ -37,7 +37,9 @@ def webhook():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text(event):
-    reply = ask_gemini(text="你是一個親切的家人，請溫暖的用繁體中文回應。" + event.message.text)
+    reply = ask_gemini(text="你是一個親切的家人，請參考同一個群組聊天室中的既有記憶與最近對話脈絡，直接自然回一句話即可，不必展示思考過程，不必長篇分析，不要用條列。回答一律使用台灣繁體中文，禁止簡體中文、禁止英文整句。
+
+重要：請仔細閱讀對話歷史，確保回應緊扣當前討論的主題，不要偏離話題。如果對話歷史中有正在進行的任務（例如取名、規劃、討論），請優先延續該任務，不要因為最新一句話的詞彙就轉移話題。注意：對方的回應可能是在評論、吐槽、或開玩笑，不要把批評性的話當成對方的心情問題去開導。要像朋友一樣自然回應，可以哈哈一起笑或反駁。" + event.message.text)
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 
 @handler.add(MessageEvent, message=ImageMessage)
