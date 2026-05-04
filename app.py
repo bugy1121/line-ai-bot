@@ -29,19 +29,15 @@ def extract_youtube_id(text):
     return None
 
 def get_youtube_info(video_id):
-    url = f"https://www.youtube.com/watch?v={video_id}"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(url, headers=headers)
-    html = response.text
-    title = ""
-    description = ""
-    title_match = re.search(r'"title":"([^"]+)"', html)
-    if title_match:
-        title = title_match.group(1)
-    desc_match = re.search(r'"shortDescription":"(.*?)"(?:,")|"description":{"simpleText":"(.*?)"', html)
-    if desc_match:
-        description = (desc_match.group(1) or desc_match.group(2) or "")[:300]
-    return title, description
+    url = f"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={video_id}&format=json"
+    try:
+        response = requests.get(url, timeout=5)
+        data = response.json()
+        title = data.get("title", "")
+        author = data.get("author_name", "")
+        return title, f"頻道：{author}"
+    except:
+        return "", ""
 
 def ask_gemini(text=None, image_base64=None, mime_type="image/jpeg"):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}"
@@ -74,7 +70,7 @@ def handle_text(event):
     if youtube_id:
         title, description = get_youtube_info(youtube_id)
         if title:
-            prompt = f"{TEXT_PROMPT}\n\n這則訊息包含一個 YouTube 影片，資訊如下：\n標題：{title}\n簡介：{description}\n\n請根據這部影片的內容自然回應。"
+            prompt = f"{TEXT_PROMPT}\n\n這則訊息包含一個 YouTube 影片，資訊如下：\n標題：{title}\n{description}\n\n請根據這部影片的標題自然回應。"
         else:
             prompt = TEXT_PROMPT + user_text
     else:
